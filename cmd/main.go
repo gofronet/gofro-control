@@ -1,0 +1,72 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"gofronet-foundation/gofro-control/delivery"
+	"gofronet-foundation/gofro-control/nodes"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"golang.org/x/sync/errgroup"
+)
+
+func main() {
+	mux := chi.NewMux()
+	{
+		mux.Use(middleware.RequestID)
+		mux.Use(middleware.RealIP)
+		mux.Use(middleware.Timeout(60 * time.Second))
+		mux.Use(middleware.Logger)
+		mux.Use(middleware.Recoverer)
+
+	}
+
+	nodeManager := nodes.NewNodeManager()
+	router := delivery.NewRouter(nodeManager)
+
+	mux.Route("/v1", func(r chi.Router) {
+		router.Register(r)
+	})
+
+	httpServer := http.Server{
+		Handler: mux,
+		Addr:    ":8080",
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	g, ctx := errgroup.WithContext(ctx)
+
+	g.Go(func() error {
+		log.Printf("http server listening on %s", httpServer.Addr)
+		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		<-ctx.Done()
+
+		log.Println("stopping HTTP server")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		return httpServer.Shutdown(shutdownCtx)
+
+	})
+
+	if err := g.Wait(); err != nil {
+		log.Printf("server stopped with error: %v", err)
+	} else {
+		log.Println("server stopped gracefully")
+	}
+
+}
