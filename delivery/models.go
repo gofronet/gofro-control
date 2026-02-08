@@ -9,14 +9,10 @@ type AddNodeRequest struct {
 	NodeAddress string `json:"node_address"`
 }
 
-type UpdateConfig struct {
-	NodeName  string `json:"node_name"`
+type UpdateConfigRequest struct {
 	NewConfig string `json:"new_config"`
 }
 
-type GetCurrentConfigRequest struct {
-	NodeName string `json:"node_name"`
-}
 type GetCurrentConfigResponse struct {
 	NodeName      string `json:"node_name"`
 	CurrentConfig string `json:"current_config"`

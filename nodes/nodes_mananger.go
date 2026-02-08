@@ -25,8 +25,9 @@ func (m *NodeManager) AddNode(ctx context.Context, address string) (*NodeInfo, e
 		return nil, err
 	}
 
-	node := Node{
-		NodeConn: conn,
+	node, err := InitializeNode(ctx, conn)
+	if err != nil {
+		return nil, err
 	}
 
 	info, err := node.GetInfo(ctx)
@@ -34,11 +35,9 @@ func (m *NodeManager) AddNode(ctx context.Context, address string) (*NodeInfo, e
 		return nil, err
 	}
 
-	node.NodeName = info.NodeName
-
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.nodes[node.NodeName] = &node
+	m.nodes[node.NodeName] = node
 
 	return info, nil
 }

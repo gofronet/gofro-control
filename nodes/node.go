@@ -22,6 +22,21 @@ type NodeInfo struct {
 	IsXrayRunning bool
 }
 
+func InitializeNode(ctx context.Context, conn *grpc.ClientConn) (*Node, error) {
+	node := &Node{
+		NodeConn: conn,
+	}
+
+	info, err := node.GetInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	node.NodeName = info.NodeName
+	return node, nil
+
+}
+
 func (node *Node) GetInfo(ctx context.Context) (*NodeInfo, error) {
 	client := apiv1.NewXrayServiceClient(node.NodeConn)
 	resp, err := client.GetNodeInfo(ctx, &apiv1.GetNodeInfoRequest{})
@@ -53,4 +68,22 @@ func (node *Node) GetCurrentConfig(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return resp.CurrentConfig, nil
+}
+
+func (node *Node) Restart(ctx context.Context) error {
+	client := apiv1.NewXrayServiceClient(node.NodeConn)
+	_, err := client.RestartXray(ctx, &apiv1.RestartXrayRequest{})
+	return err
+}
+
+func (node *Node) Start(ctx context.Context) error {
+	client := apiv1.NewXrayServiceClient(node.NodeConn)
+	_, err := client.StartXray(ctx, &apiv1.StartXrayRequest{})
+	return err
+}
+
+func (node *Node) Stop(ctx context.Context) error {
+	client := apiv1.NewXrayServiceClient(node.NodeConn)
+	_, err := client.StopXray(ctx, &apiv1.StopXrayRequest{})
+	return err
 }
