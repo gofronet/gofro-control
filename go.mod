@@ -1,6 +1,6 @@
 module gofronet-foundation/gofro-control
 
-go 1.25.7
+go 1.26
 
 require (
 	github.com/go-chi/chi v1.5.5
