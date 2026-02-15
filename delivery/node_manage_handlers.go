@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -33,6 +34,7 @@ func (router *Router) AddNode(w http.ResponseWriter, r *http.Request) {
 
 	res, err := router.nodeManager.AddNode(r.Context(), req.NodeAddress)
 	if err != nil {
+		log.Printf("failed to add node, err: %s", err)
 		RespondErr(w, http.StatusInternalServerError, err)
 		return
 	}
