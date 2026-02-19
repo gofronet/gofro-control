@@ -1,0 +1,34 @@
+package delivery
+
+import (
+	"gofronet-foundation/gofro-control/internal/nodes"
+
+	"github.com/go-chi/chi/v5"
+)
+
+type Router struct {
+	nodeManager *nodes.NodeManager
+}
+
+func NewRouter(nodeManager *nodes.NodeManager) *Router {
+	return &Router{
+		nodeManager: nodeManager,
+	}
+}
+
+func (router *Router) Register(r chi.Router) {
+	r.Route("/nodes", func(r chi.Router) {
+		r.Get("/", router.GetAllNodesHandler)
+		r.Post("/", router.AddNode)
+		r.Delete("/", router.DeleteNode)
+
+		r.Route("/{node_name}", func(r chi.Router) {
+			r.Get("/config", router.GetCurrentConfig)
+			r.Put("/config", router.UpdateConfig)
+
+			r.Post("/start", router.Start)
+			r.Post("/stop", router.Stop)
+			r.Post("/restart", router.Restart)
+		})
+	})
+}

@@ -1,9 +1,9 @@
 package certs
 
-import "gofronet-foundation/gofro-control/internal"
+import "gofronet-foundation/gofro-control/internal/constants"
 
 const (
-	CertsDir     = internal.AppDataDir + "/certs"
+	CertsDir     = constants.AppDataDir + "/certs"
 	RootKeyPath  = CertsDir + "/root-ca.key"
 	RootCertPath = CertsDir + "/root-ca.crt"
 )

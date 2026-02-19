@@ -1,4 +1,4 @@
-package internal
+package constants
 
 const (
 	AppDataDir = "./data"
