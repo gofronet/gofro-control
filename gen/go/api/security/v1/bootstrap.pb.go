@@ -24,7 +24,7 @@ const (
 type BootstrapRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	BootstrapToken string                 `protobuf:"bytes,1,opt,name=bootstrap_token,json=bootstrapToken,proto3" json:"bootstrap_token,omitempty"`
-	Csr            string                 `protobuf:"bytes,2,opt,name=csr,proto3" json:"csr,omitempty"`
+	CsrDer         []byte                 `protobuf:"bytes,2,opt,name=csr_der,json=csrDer,proto3" json:"csr_der,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -66,17 +66,17 @@ func (x *BootstrapRequest) GetBootstrapToken() string {
 	return ""
 }
 
-func (x *BootstrapRequest) GetCsr() string {
+func (x *BootstrapRequest) GetCsrDer() []byte {
 	if x != nil {
-		return x.Csr
+		return x.CsrDer
 	}
-	return ""
+	return nil
 }
 
 type BootstrapResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	LeafCert      []byte                 `protobuf:"bytes,2,opt,name=leaf_cert,json=leafCert,proto3" json:"leaf_cert,omitempty"`
+	LeafCertDer   []byte                 `protobuf:"bytes,2,opt,name=leaf_cert_der,json=leafCertDer,proto3" json:"leaf_cert_der,omitempty"`
 	ExpiresUnix   int64                  `protobuf:"varint,4,opt,name=expires_unix,json=expiresUnix,proto3" json:"expires_unix,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -119,9 +119,9 @@ func (x *BootstrapResponse) GetNodeId() string {
 	return ""
 }
 
-func (x *BootstrapResponse) GetLeafCert() []byte {
+func (x *BootstrapResponse) GetLeafCertDer() []byte {
 	if x != nil {
-		return x.LeafCert
+		return x.LeafCertDer
 	}
 	return nil
 }
@@ -137,13 +137,13 @@ var File_api_security_v1_bootstrap_proto protoreflect.FileDescriptor
 
 const file_api_security_v1_bootstrap_proto_rawDesc = "" +
 	"\n" +
-	"\x1fapi/security/v1/bootstrap.proto\x12\x0fapi.security.v1\"M\n" +
+	"\x1fapi/security/v1/bootstrap.proto\x12\x0fapi.security.v1\"T\n" +
 	"\x10BootstrapRequest\x12'\n" +
-	"\x0fbootstrap_token\x18\x01 \x01(\tR\x0ebootstrapToken\x12\x10\n" +
-	"\x03csr\x18\x02 \x01(\tR\x03csr\"l\n" +
+	"\x0fbootstrap_token\x18\x01 \x01(\tR\x0ebootstrapToken\x12\x17\n" +
+	"\acsr_der\x18\x02 \x01(\fR\x06csrDer\"s\n" +
 	"\x11BootstrapResponse\x12\x17\n" +
-	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1b\n" +
-	"\tleaf_cert\x18\x02 \x01(\fR\bleafCert\x12!\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\"\n" +
+	"\rleaf_cert_der\x18\x02 \x01(\fR\vleafCertDer\x12!\n" +
 	"\fexpires_unix\x18\x04 \x01(\x03R\vexpiresUnix2f\n" +
 	"\x10BootstrapService\x12R\n" +
 	"\tBootstrap\x12!.api.security.v1.BootstrapRequest\x1a\".api.security.v1.BootstrapResponseB&Z$gen/go/api/security/v1;apisecurityv1b\x06proto3"

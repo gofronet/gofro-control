@@ -40,7 +40,7 @@ func (m *JWTSecretManager) Sign(claims jwt.MapClaims) (string, error) {
 	return tok.SignedString(priv)
 }
 
-func (m *JWTSecretManager) Verify(tokenString string, expectedIssuer string, expectedAudience string) (jwt.MapClaims, error) {
+func (m *JWTSecretManager) Verify(tokenString string) (jwt.MapClaims, error) {
 	m.mu.RLock()
 	pub := (*rsa.PublicKey)(nil)
 	if m.priv != nil {
@@ -54,13 +54,8 @@ func (m *JWTSecretManager) Verify(tokenString string, expectedIssuer string, exp
 
 	opts := []jwt.ParserOption{
 		jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Alg()}),
-	}
-
-	if expectedIssuer != "" {
-		opts = append(opts, jwt.WithIssuer(expectedIssuer))
-	}
-	if expectedAudience != "" {
-		opts = append(opts, jwt.WithAudience(expectedAudience))
+		jwt.WithAudience(Audience),
+		jwt.WithIssuer(Issuer),
 	}
 
 	tok, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {

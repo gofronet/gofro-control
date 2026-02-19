@@ -44,13 +44,13 @@ func StartHttpServer(ctx context.Context, deps *Deps) error {
 		Handler: r,
 	}
 
-	go gracefulDownServer(ctx, &server)
+	go gracefulStopServer(ctx, &server)
 
 	log.Printf("Starting server on %s", server.Addr)
 	return server.ListenAndServe()
 }
 
-func gracefulDownServer(ctx context.Context, srv *http.Server) {
+func gracefulStopServer(ctx context.Context, srv *http.Server) {
 	<-ctx.Done()
 
 	log.Printf("shutting down server with addr: %s", srv.Addr)

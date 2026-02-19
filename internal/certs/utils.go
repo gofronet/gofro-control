@@ -71,3 +71,26 @@ func writePEM(path, typ string, der []byte, perm os.FileMode) error {
 
 	return pem.Encode(f, &pem.Block{Type: typ, Bytes: der})
 }
+
+func ParseCSRFromPEM(csrPEM string) (*x509.CertificateRequest, error) {
+	block, _ := pem.Decode([]byte(csrPEM))
+	if block == nil || block.Type != "CERTIFICATE REQUEST" {
+		return nil, fmt.Errorf("invalid CSR PEM")
+	}
+	csr, err := x509.ParseCertificateRequest(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("parse CSR: %w", err)
+	}
+	return csr, nil
+}
+
+func ParseCSRFromDER(csrDER []byte) (*x509.CertificateRequest, error) {
+	if len(csrDER) == 0 {
+		return nil, fmt.Errorf("csr der is empty")
+	}
+	csr, err := x509.ParseCertificateRequest(csrDER)
+	if err != nil {
+		return nil, fmt.Errorf("parse CSR DER: %w", err)
+	}
+	return csr, nil
+}
