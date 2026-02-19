@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"context"
 	"gofronet-foundation/gofro-control/internal/certs"
 	jwtutils "gofronet-foundation/gofro-control/internal/jwt_utils"
 	"gofronet-foundation/gofro-control/internal/nodes/bootstrap"
@@ -13,7 +14,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func StartHttpServer() error {
+func StartHttpServer(ctx context.Context) error {
 
 	r := chi.NewRouter()
 	{
@@ -45,7 +46,26 @@ func StartHttpServer() error {
 		bootstrapRouter.Register(r)
 	})
 
-	log.Println("Starting server on :1337")
-	log.Fatalln(http.ListenAndServe(":1337", r))
-	return nil
+	server := http.Server{
+		Addr:    ":1337",
+		Handler: r,
+	}
+
+	go gracefulDownServer(ctx, &server)
+
+	log.Printf("Starting server on %s", server.Addr)
+	return server.ListenAndServe()
+}
+
+func gracefulDownServer(ctx context.Context, srv *http.Server) {
+	<-ctx.Done()
+
+	log.Printf("shutting down server with addr: %s", srv.Addr)
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("shutdown error: %v", err)
+	}
 }

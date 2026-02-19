@@ -3,8 +3,8 @@ package models
 import "time"
 
 const (
-	InviteStatusPending   = "pending"
-	InviteStatusActivated = "activated"
+	InviteStatusPending = "pending"
+	InviteStatusUsed    = "used"
 )
 
 type InviteRecord struct {

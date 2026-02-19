@@ -75,7 +75,7 @@ func (router *BootstrapRouter) InviteNode(w http.ResponseWriter, r *http.Request
 		NodeAddress: req.NodeAddress,
 		InviteID:    inviteID,
 		ExpireIn:    exp,
-		Status:      models.InviteStatusActivated,
+		Status:      models.InviteStatusPending,
 	}
 
 	if err := router.inviteStore.AddInvite(&invite); err != nil {
