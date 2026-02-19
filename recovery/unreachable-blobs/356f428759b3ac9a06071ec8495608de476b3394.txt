@@ -1,1 +1,0 @@
-[{"node_name":"gofro-node-1-ams","node_address":"72.56.109.101:50051"}]

@@ -6,10 +6,8 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"encoding/pem"
 	"fmt"
 
-	"math/big"
 	"os"
 	"time"
 )
@@ -75,22 +73,6 @@ func CreateRootCA() error {
 	}
 
 	return nil
-}
-
-func randSerial() (*big.Int, error) {
-	// 128-bit random serial
-	limit := new(big.Int).Lsh(big.NewInt(1), 128)
-	return rand.Int(rand.Reader, limit)
-}
-
-func writePEM(path, typ string, der []byte, perm os.FileMode) error {
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	return pem.Encode(f, &pem.Block{Type: typ, Bytes: der})
 }
 
 func ensureRootCA() error {

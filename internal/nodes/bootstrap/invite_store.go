@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"encoding/json"
+	"errors"
 	"gofronet-foundation/gofro-control/internal/constants"
 	"gofronet-foundation/gofro-control/internal/nodes/bootstrap/models"
 	"os"
@@ -36,10 +37,64 @@ func NewInviteStore() *InviteStore {
 	return &InviteStore{}
 }
 
-func (s *InviteStore) AddInvite(invite *models.InviteRecord) error {
+func (s *InviteStore) DoneInvite(inviteID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	file, err := readInvitesFile()
+	if err != nil {
+		return err
+	}
+
+	var invites map[string]*models.InviteRecord
+	if err := json.Unmarshal(file, &invites); err != nil {
+		return err
+	}
+
+	_, ok := invites[inviteID]
+	if !ok {
+		return errors.New("invite not found")
+	}
+
+	delete(invites, inviteID)
+
+	serializedInvites, err := json.Marshal(invites)
+	if err != nil {
+		return err
+	}
+
+	if err := writeInvitesFile(serializedInvites); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *InviteStore) GetInvite(inviteID string) (*models.InviteRecord, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	file, err := readInvitesFile()
+	if err != nil {
+		return nil, err
+	}
+
+	var invites map[string]*models.InviteRecord
+	if err := json.Unmarshal(file, &invites); err != nil {
+		return nil, err
+	}
+
+	invite, ok := invites[inviteID]
+	if !ok {
+		return nil, errors.New("invite not found")
+	}
+
+	return invite, nil
+
+}
+
+func (s *InviteStore) AddInvite(invite *models.InviteRecord) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	invitesFile, err := readInvitesFile()
 	if err != nil {
 		return err
@@ -65,10 +120,11 @@ func (s *InviteStore) AddInvite(invite *models.InviteRecord) error {
 }
 
 func writeInvitesFile(content []byte) error {
-	return os.WriteFile(invitesPath, content, 0o644)
+	return os.WriteFile(invitesPath, content, 0o600)
 }
 
 func readInvitesFile() ([]byte, error) {
+
 	invitesFile, err := os.ReadFile(invitesPath)
 	if err != nil {
 		return nil, err

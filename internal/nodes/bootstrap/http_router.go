@@ -2,8 +2,8 @@ package bootstrap
 
 import (
 	"encoding/json"
-	jwtutils "gofronet-foundation/gofro-control/internal/jwt_utils"
 	"gofronet-foundation/gofro-control/internal/nodes/bootstrap/models"
+	jwtutils "gofronet-foundation/gofro-control/internal/security/jwt_utils"
 	"net/http"
 	"strings"
 	"time"

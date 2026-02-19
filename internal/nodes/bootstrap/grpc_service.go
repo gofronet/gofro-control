@@ -4,9 +4,6 @@ import (
 	"context"
 	apisecurityv1 "gofronet-foundation/gofro-control/gen/go/api/security/v1"
 	jwtutils "gofronet-foundation/gofro-control/internal/security/jwt_utils"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type BootstrapGrpcService struct {
@@ -23,6 +20,5 @@ func NewBooststrapGrpcService(inviteStore *InviteStore, jwtSecretManager *jwtuti
 }
 
 func (s *BootstrapGrpcService) Bootstrap(ctx context.Context, req *apisecurityv1.BootstrapRequest) (*apisecurityv1.BootstrapResponse, error) {
-
-	return nil, status.Error(codes.Unimplemented, "method Bootstrap not implemented")
+	return nil, nil
 }
